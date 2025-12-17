@@ -11,24 +11,24 @@ entity Customers : cuid {
   /** Business-visible customer identifier */
   @assert.unique
   @mandatory
-  customerNumber            : Integer;
+  customerNumber            : Integer @title : 'Customer Number';
 
-  name                       : String(100);
-  email                      : String(100);
+  name                       : String(100) @title : 'Customer Name';
+  email                      : String(100) @title : 'Customer Email';
 
   /** Monetary aggregates */
-  totalPurchaseValue         : Decimal(11,2);
+  totalPurchaseValue         : Decimal(11,2)@title : 'Total Purchase Value';
 
   /** Reward points are COUNTS, not amounts */
-  totalRewardPoints          : Integer;
-  totalRedeemedRewardPoints  : Integer;
+  totalRewardPoints          : Integer @title : 'Total Reward Points';
+  totalRedeemedRewardPoints  : Integer @title : 'Total Redeemed Reward Points';
 
   /** Navigational associations */
   purchases                  : Association to many Purchases
-                                on purchases.customer = $self;
+                                on purchases.customer = $self @title : 'Purchases made by Customer';
 
   redemptions                : Association to many Redemptions
-                                on redemptions.customer = $self;
+                                on redemptions.customer = $self ;
 }
 
 
@@ -37,10 +37,10 @@ entity Customers : cuid {
  */
 entity Products : cuid {
 
-  name        : String(100);
-  description : String(500);
+  name        : String(100) @title : 'Product Name';
+  description : String(500) @title : 'Product Description';
 
-  price       : Decimal(11,2);
+  price       : Decimal(11,2) @title : 'Product Price';
   currency    : Currency;
 
   /** Reverse navigation */
@@ -54,14 +54,14 @@ entity Products : cuid {
  */
 entity Purchases : cuid {
 
-  purchaseValue  : Decimal(11,2);
+  purchaseValue  : Decimal(11,2) @title : 'Purchase Value';
   currency       : Currency;
 
   /** Reward points earned for this purchase */
-  rewardPoints   : Integer;
+  rewardPoints   : Integer @title : 'Reward Points Earned';
 
   /** Owning customer */
-  customer       : Association to Customers @mandatory;
+  customer       : Association to Customers @mandatory ;
 
   /** Purchased product */
   selectedProduct : Association to Products @mandatory;
@@ -73,7 +73,7 @@ entity Purchases : cuid {
  */
 entity Redemptions : cuid {
 
-  redeemedAmount : Decimal(11,2);
+  redeemedAmount : Decimal(11,2) @title : 'Redeemed Amount';
 
   /** Customer who redeemed points */
   customer       : Association to Customers @mandatory;
