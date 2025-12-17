@@ -12,7 +12,7 @@ using { my.customers as db } from './schema';
 entity CustomerSpending as
   select from db.Customers {
 
-    ID,
+    key ID,
     customerNumber,
     name,
     email,
@@ -47,7 +47,8 @@ entity CustomerSpending as
 entity PurchaseHistory as
   select from db.Purchases {
 
-    ID,
+    key ID,
+
     purchaseValue,
     rewardPoints,
 
@@ -56,11 +57,11 @@ entity PurchaseHistory as
       concat(' (', concat(currency.code, ')'))
     ) as productLabel : String(150),
 
-    customer.ID             as customerID,
+    customer.ID             as customerID : UUID,
     customer.customerNumber as customerNumber,
     customer.name           as customerName,
 
-    selectedProduct.ID      as productID,
+    selectedProduct.ID      as productID : UUID,
     selectedProduct.name    as productName,
     selectedProduct.price   as productPrice
   };
@@ -76,12 +77,13 @@ entity PurchaseHistory as
 entity ProductSalesSummary as
   select from db.Purchases {
 
-    selectedProduct.ID   as productID,
-    selectedProduct.name as productName,
-    currency.code        as currencyCode,
+    key selectedProduct.ID as productID : UUID,
+    key currency.code      as currencyCode : String(3),
 
-    sum(purchaseValue)   as totalRevenue   : Decimal(15,2),
-    count(ID)            as totalPurchases : Integer,
+    selectedProduct.name   as productName,
+
+    sum(purchaseValue)     as totalRevenue   : Decimal(15,2),
+    count(ID)              as totalPurchases : Integer,
 
     case
       when sum(purchaseValue) >= 5000 then 'HIGH REVENUE'
@@ -104,7 +106,8 @@ entity ProductSalesSummary as
 entity CustomerRedemptionSummary as
   select from db.Redemptions {
 
-    customer.ID             as customerID,
+    key customer.ID         as customerID : UUID,
+
     customer.customerNumber as customerNumber,
     customer.name           as customerName,
 
@@ -124,7 +127,19 @@ entity CustomerRedemptionSummary as
  */
 @readonly
 entity HighValueCustomers as
-  select from CustomerSpending
+  select from CustomerSpending {
+
+    key ID,
+    customerNumber,
+    name,
+    email,
+    customerDisplayName,
+    totalPurchaseValue,
+    totalRewardPoints,
+    totalRedeemedRewardPoints,
+    availableRewardPoints,
+    customerTier
+  }
   where totalPurchaseValue >= 1000;
 
 
@@ -137,7 +152,7 @@ entity HighValueCustomers as
 entity CustomerEngagementStatus as
   select from CustomerSpending {
 
-    ID,
+    key ID,
     customerNumber,
     name,
     totalPurchaseValue,
@@ -163,9 +178,10 @@ entity CustomerEngagementStatus as
 entity ProductPopularity as
   select from ProductSalesSummary {
 
-    productID,
+    key productID,
+    key currencyCode,
+
     productName,
-    currencyCode,
     totalRevenue,
     totalPurchases
   }
@@ -181,7 +197,8 @@ entity ProductPopularity as
 entity CustomerLifetimeValue as
   select from db.Customers {
 
-    ID,
+    key ID,
+
     customerNumber,
     name,
 
@@ -205,14 +222,14 @@ entity CustomerLifetimeValue as
 entity CustomerProductMatrix as
   select from db.Purchases {
 
-    customer.customerNumber as customerNumber,
-    customer.name           as customerName,
+    key customer.customerNumber as customerNumber : Integer,
+    key selectedProduct.name    as productName    : String(100),
+    key currency.code           as currencyCode   : String(3),
 
-    selectedProduct.name    as productName,
-    currency.code           as currencyCode,
+    customer.name               as customerName,
 
-    count(ID)               as purchaseCount,
-    sum(purchaseValue)      as totalSpend : Decimal(15,2)
+    count(ID)                   as purchaseCount : Integer,
+    sum(purchaseValue)          as totalSpend    : Decimal(15,2)
   }
   group by
     customer.customerNumber,
@@ -230,7 +247,8 @@ entity CustomerProductMatrix as
 entity HighValuePurchases as
   select from db.Purchases {
 
-    ID,
+    key ID,
+
     purchaseValue,
     rewardPoints,
     currency.code           as currencyCode,
