@@ -1,0 +1,5 @@
+ID,customerNumber,name,email,totalPurchaseValue,totalRewardPoints,totalRedeemedRewardPoints
+8f1a3b20-1d5a-4f12-8a01-111111111111,1001,Arun Kumar,arun.kumar@acme.com,12500.00,1250,300
+8f1a3b20-1d5a-4f12-8a01-222222222222,1002,Meera Iyer,meera.iyer@acme.com,9800.00,980,200
+8f1a3b20-1d5a-4f12-8a01-333333333333,1003,Rahul Sharma,rahul.sharma@acme.com,15400.00,1540,500
+8f1a3b20-1d5a-4f12-8a01-444444444444,1004,Anita Verma,anita.verma@acme.com,7200.00,720,100

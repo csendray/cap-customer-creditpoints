@@ -1,0 +1,80 @@
+namespace my.customers;
+
+using { cuid, Currency } from '@sap/cds/common';
+
+/**
+ * Customers earn reward points through purchases
+ * and redeem them later.
+ */
+entity Customers : cuid {
+
+  /** Business-visible customer identifier */
+  @assert.unique
+  @mandatory
+  customerNumber            : Integer;
+
+  name                       : String(100);
+  email                      : String(100);
+
+  /** Monetary aggregates */
+  totalPurchaseValue         : Decimal(11,2);
+
+  /** Reward points are COUNTS, not amounts */
+  totalRewardPoints          : Integer;
+  totalRedeemedRewardPoints  : Integer;
+
+  /** Navigational associations */
+  purchases                  : Association to many Purchases
+                                on purchases.customer = $self;
+
+  redemptions                : Association to many Redemptions
+                                on redemptions.customer = $self;
+}
+
+
+/**
+ * Products that can be purchased by customers
+ */
+entity Products : cuid {
+
+  name        : String(100);
+  description : String(500);
+
+  price       : Decimal(11,2);
+  currency    : Currency;
+
+  /** Reverse navigation */
+  purchases   : Association to many Purchases
+                  on purchases.selectedProduct = $self;
+}
+
+
+/**
+ * Purchase transactions made by customers
+ */
+entity Purchases : cuid {
+
+  purchaseValue  : Decimal(11,2);
+  currency       : Currency;
+
+  /** Reward points earned for this purchase */
+  rewardPoints   : Integer;
+
+  /** Owning customer */
+  customer       : Association to Customers @mandatory;
+
+  /** Purchased product */
+  selectedProduct : Association to Products @mandatory;
+}
+
+
+/**
+ * Reward redemption transactions
+ */
+entity Redemptions : cuid {
+
+  redeemedAmount : Decimal(11,2);
+
+  /** Customer who redeemed points */
+  customer       : Association to Customers @mandatory;
+}
