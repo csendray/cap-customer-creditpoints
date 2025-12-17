@@ -4,6 +4,13 @@ using cust_service as Srv from './cust-service';
 // 1. CUSTOMERS: Master Data & Object Page
 // -------------------------------------------------------------------------
 annotate Srv.cust_services.Customers with @(
+
+    // 1. Explicitly enable creation/editing capabilities
+    Capabilities : {
+        InsertRestrictions : {Insertable : true},
+        UpdateRestrictions : {Updatable : true},
+        DeleteRestrictions : {Deletable : true}
+    },
     UI.HeaderInfo: {
         TypeName: 'Customer',
         TypeNamePlural: 'Customers',
